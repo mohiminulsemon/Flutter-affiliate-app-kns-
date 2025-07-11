@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:knsbuy/routes/app_router.dart';
+import 'package:knsbuy/services/app_session.dart';
 import 'package:lottie/lottie.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -17,6 +20,12 @@ class DashboardPage extends StatelessWidget {
             const Text('KNSbuy', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => AppSession.clearToken(context),
+          ),
+        ],
       ),
       body: Center(
         child: Padding(
@@ -39,13 +48,30 @@ class DashboardPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                "Thank you for being here with us. Our team is working hard to bring you the best  experience through KNSbuy.\nStay tuned for awesome updates!",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
-                  height: 1.6,
+              // const Text(
+              //   "Thank you for being here with us. Our team is working hard to bring you the best  experience through KNSbuy.\nStay tuned for awesome updates!",
+              //   textAlign: TextAlign.center,
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     color: Colors.white70,
+              //     height: 1.6,
+              //   ),
+              // ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.go(AppRouter.investment);
+                },
+                icon: const Icon(Icons.trending_up_rounded),
+                label: const Text("Invest Now"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ],

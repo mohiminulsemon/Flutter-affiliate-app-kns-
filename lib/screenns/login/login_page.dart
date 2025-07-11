@@ -1,40 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:knsbuy/common/custom_snackbar.dart';
+import 'package:knsbuy/screenns/login/login_providers.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _showPassword = false;
 
-  Future<void> _login() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedUsername = prefs.getString('username');
-    final savedPassword = prefs.getString('password');
-
-    if (_formKey.currentState!.validate() && mounted) {
-      if (_usernameController.text == savedUsername &&
-          _passwordController.text == savedPassword) {
-        await prefs.setBool('is_logged_in', true);
-        if (mounted) context.go('/dashboard');
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Invalid credentials')));
-      }
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      ref
+          .read(loginProvider.notifier)
+          .login(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+            context: context,
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loginState = ref.watch(loginProvider);
+
+    ref.listen<LoginState>(loginProvider, (_, state) {
+      if (state.status == LoginStatus.failure && state.error != null) {
+        CustomSnackbar.showError(context, state.error!);
+        ref.read(loginProvider.notifier).reset();
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF0f0f2d),
       body: Center(
@@ -53,11 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo
-                    Image.asset(
-                      'assets/images/app_logo.png', // Ensure this path matches your asset
-                      height: 80,
-                    ),
+                    Image.asset('assets/images/app_logo.png', height: 80),
                     const SizedBox(height: 12),
                     const Text(
                       "Login",
@@ -74,18 +75,20 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Username Field
                     TextFormField(
-                      controller: _usernameController,
+                      controller: _emailController,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration: const InputDecoration(labelText: "Username"),
+                      decoration: const InputDecoration(labelText: "Email"),
                       validator: (value) => value == null || value.isEmpty
-                          ? 'Enter username'
-                          : null,
+                          ? 'Enter email'
+                          : (!RegExp(
+                                  r'^[\w-.]+@([\w-]+\.)+[\w]{2,4}$',
+                                ).hasMatch(value)
+                                ? 'Enter valid email'
+                                : null),
                     ),
                     const SizedBox(height: 12),
 
-                    // Password Field
                     TextFormField(
                       controller: _passwordController,
                       obscureText: !_showPassword,
@@ -99,11 +102,8 @@ class _LoginPageState extends State<LoginPage> {
                                 : Icons.visibility_off,
                             color: Colors.white70,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _showPassword = !_showPassword;
-                            });
-                          },
+                          onPressed: () =>
+                              setState(() => _showPassword = !_showPassword),
                         ),
                       ),
                       validator: (value) => value == null || value.isEmpty
@@ -112,11 +112,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Login Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _login,
+                        onPressed: loginState.status == LoginStatus.loading
+                            ? null
+                            : _submit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4e9af1),
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -124,14 +125,21 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                        child: loginState.status == LoginStatus.loading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
-
                     const SizedBox(height: 12),
+
                     TextButton(
                       onPressed: () => context.go('/register'),
                       child: const Text(

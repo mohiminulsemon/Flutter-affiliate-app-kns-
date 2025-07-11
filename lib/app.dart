@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:knsbuy/common/theme.dart';
+import 'package:knsbuy/services/theme.dart';
 import 'package:knsbuy/routes/app_router.dart';
 
 class KnsBuyApp extends ConsumerWidget {
@@ -13,8 +13,6 @@ class KnsBuyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.router,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
     );
   }
 }
