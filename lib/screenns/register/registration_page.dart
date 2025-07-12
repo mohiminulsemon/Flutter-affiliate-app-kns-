@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:go_router/go_router.dart'; // Only needed if using go_router
+import 'package:knsbuy/common/custom_snackbar.dart';
+import 'package:knsbuy/screenns/register/registration_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RegistrationPage extends StatefulWidget {
+class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key});
 
   @override
-  State<RegistrationPage> createState() => _RegistrationPageState();
+  ConsumerState<RegistrationPage> createState() => _RegistrationPageState();
 }
 
-class _RegistrationPageState extends State<RegistrationPage> {
+class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -33,29 +35,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('first_name', _firstNameController.text);
-      await prefs.setString('last_name', _lastNameController.text);
-      await prefs.setString('username', _usernameController.text);
-      await prefs.setString('email', _emailController.text);
-      await prefs.setString('password', _passwordController.text);
-      await prefs.setString('referral_code', _referralCodeController.text);
-      await prefs.setString('level', _selectedLevel);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
-        );
-        await Future.delayed(const Duration(milliseconds: 500));
-        context.go(
-          '/login',
-        ); // or use Navigator.pop(context) if coming from login
-      }
+      final register = ref.read(registerProvider.notifier);
+      await register.register(
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        userName: _usernameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        referralCode: _referralCodeController.text.trim(),
+        placeholder: _selectedLevel,
+        context: context,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final registrationState = ref.watch(registerProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final registerState = ref.read(registerProvider);
+      if (registerState.status == RegisterStatus.failure &&
+          registerState.error != null) {
+        CustomSnackbar.showError(context, registerState.error!);
+        ref.read(registerProvider.notifier).reset();
+      }
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFF0f0f2d),
       body: Center(
@@ -175,7 +181,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: _submitForm,
+                        onPressed:
+                            registrationState.status == RegisterStatus.loading
+                            ? null
+                            : _submitForm,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4e9af1),
                           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -187,6 +196,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           "Register",
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    TextButton(
+                      onPressed: () => context.go('/login'),
+                      child: const Text(
+                        "Already have an account? login",
+                        style: TextStyle(color: Colors.white70),
                       ),
                     ),
                   ],

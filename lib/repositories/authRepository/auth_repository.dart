@@ -23,4 +23,28 @@ class AuthRepository {
       fromData: (json) => LoginData.fromJson(json),
     );
   }
+
+  Future<void> register({
+    required String firstName,
+    required String lastName,
+    required String userName,
+    required String email,
+    required String password,
+    required String referralCode,
+    String? placeholder,
+  }) async {
+    await dioClient.post<void>(
+      ApiEndpoints.register,
+      data: {
+        'firstName': firstName,
+        'lastName': lastName,
+        'userName': userName,
+        'email': email,
+        'password': password,
+        'referralCode': referralCode,
+        // 'placeholder': placeholder
+      },
+      fromData: (json) => json,
+    );
+  }
 }

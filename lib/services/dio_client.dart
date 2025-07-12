@@ -1,13 +1,12 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:knsbuy/constants/api_endpoints.dart';
-import 'package:knsbuy/models/api_exceptions.dart';
-import 'package:knsbuy/models/api_response_model.dart';
 import 'package:knsbuy/services/app_session.dart';
 
-final apiProvider = Provider<DioClient>((ref) {
-  return DioClient();
-});
+final apiProvider = Provider<DioClient>((ref) => DioClient());
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
@@ -24,6 +23,10 @@ class DioClient {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
+      validateStatus: (status) {
+        // Let all status codes pass through to custom handler
+        return true;
+      },
     );
 
     _dio = Dio(options);
@@ -32,7 +35,7 @@ class DioClient {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await AppSession.getToken();
-          if (token != null) {
+          if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
@@ -52,8 +55,26 @@ class DioClient {
     Map<String, dynamic>? queryParams,
     required T Function(dynamic data) fromData,
   }) async {
-    final response = await _dio.get(path, queryParameters: queryParams);
-    return _handleResponse<T>(response, fromData);
+    try {
+      final response = await _dio.get(path, queryParameters: queryParams);
+      return _parseResponse<T>(response, fromData);
+    } on DioException catch (e) {
+      final response = e.response;
+      if (e.error is SocketException) {
+        throw 'No internet connection';
+      }
+      if (e.error is DioExceptionType) {
+        throw response!.data['message'];
+      }
+
+      if (response?.data is Map && response!.data['message'] != null) {
+        throw response.data['message'];
+      }
+
+      throw 'Request failed. Please try again.';
+    } catch (e) {
+      throw 'Something went wrong.';
+    }
   }
 
   Future<T> post<T>(
@@ -61,23 +82,43 @@ class DioClient {
     dynamic data,
     required T Function(dynamic data) fromData,
   }) async {
-    final response = await _dio.post(path, data: data);
-    return _handleResponse<T>(response, fromData);
-  }
-
-  T _handleResponse<T>(Response response, T Function(dynamic data) fromData) {
     try {
-      final apiResponse = ApiResponse<T>.fromJson(response.data, fromData);
+      final response = await _dio.post(path, data: data);
+      return _parseResponse<T>(response, fromData);
+    } on DioException catch (e) {
+      final response = e.response;
 
-      if (!apiResponse.success) {
-        throw ApiException.fromResponse(response.data);
+      if (e.error is SocketException) {
+        throw 'No internet connection';
+      }
+      if (e.error is DioExceptionType) {
+        throw response!.data['message'];
       }
 
-      return apiResponse.data;
-    } on ApiException {
-      rethrow;
+      if (response?.data is Map && response!.data['message'] != null) {
+        debugPrint("thorwing messages ${response.data['message']}-----------");
+        throw response.data['message'];
+      }
+
+      throw 'Request failed. Please try again.';
     } catch (e) {
-      throw ApiException('Something went wrong parsing the response.');
+      debugPrint("thorwing messages from catch $e-----------");
+      throw e.toString();
+    }
+  }
+
+  T _parseResponse<T>(Response response, T Function(dynamic data) fromData) {
+    final data = response.data;
+
+    if (data is Map<String, dynamic>) {
+      if (data['success'] == true) {
+        return fromData(data['data']);
+      } else {
+        // ⚠️ Simplest form: just throw the message
+        throw data['message'] ?? 'Unknown error occurred.';
+      }
+    } else {
+      throw 'Invalid response format';
     }
   }
 }

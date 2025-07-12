@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:knsbuy/models/api_exceptions.dart';
+import 'package:knsbuy/common/custom_snackbar.dart';
 import 'package:knsbuy/repositories/authRepository/auth_repository.dart';
 import 'package:knsbuy/services/app_session.dart';
 
@@ -42,18 +42,12 @@ class LoginNotifier extends StateNotifier<LoginState> {
       await AppSession.saveToken(loginData.accessToken);
       state = state.copyWith(status: LoginStatus.success);
 
-      if (context.mounted) context.go('/dashboard');
-    } on ApiException catch (e) {
-      // For "User not found" case, this will automatically show the message
-      state = state.copyWith(
-        status: LoginStatus.failure,
-        error: e.message, // This will show "User not found" directly
-      );
+      if (context.mounted) {
+        CustomSnackbar.showSuccess(context, 'Succesfully logged in');
+        context.go('/dashboard');
+      }
     } catch (e) {
-      state = state.copyWith(
-        status: LoginStatus.failure,
-        error: 'Login failed. Please try again.',
-      );
+      state = state.copyWith(status: LoginStatus.failure, error: e.toString());
     }
   }
 
