@@ -4,6 +4,7 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.dark,
     primarySwatch: Colors.teal,
+    appBarTheme: AppBarTheme(backgroundColor: const Color(0xFF1c1c3c)),
     scaffoldBackgroundColor: const Color(0xFF0f0f2d),
     cardColor: const Color(0xFF1c1c3c),
     inputDecorationTheme: InputDecorationTheme(

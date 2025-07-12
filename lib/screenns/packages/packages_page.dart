@@ -1,214 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:knsbuy/common/custom_snackbar.dart';
+import 'package:knsbuy/models/packages_model.dart';
+import 'package:knsbuy/screenns/packages/packages_repository.dart';
 
-class InvestmentPlan {
-  final String id;
-  final String title;
-  final String amount;
-  final String revenue;
-  final String details;
-
-  InvestmentPlan({
-    required this.id,
-    required this.title,
-    required this.amount,
-    required this.revenue,
-    required this.details,
-  });
-}
-
-class InvestmentPage extends StatefulWidget {
+class InvestmentPage extends ConsumerWidget {
   const InvestmentPage({super.key});
 
   @override
-  State<InvestmentPage> createState() => _InvestmentPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final packagesAsync = ref.watch(packagesProvider);
 
-class _InvestmentPageState extends State<InvestmentPage> {
-  final List<InvestmentPlan> _plans = [
-    InvestmentPlan(
-      id: '1',
-      title: 'Starter Plan',
-      amount: '6,500 BDT',
-      revenue: '300 BDT / month',
-      details: 'This plan is ideal for beginners...',
-    ),
-    InvestmentPlan(
-      id: '2',
-      title: 'Silver Plan',
-      amount: '32,500 BDT',
-      revenue: '1,600 BDT / month',
-      details: 'A perfect choice for moderate investors...',
-    ),
-    InvestmentPlan(
-      id: '3',
-      title: 'Gold Plan',
-      amount: '65,000 BDT',
-      revenue: '3,300 BDT / month',
-      details: 'Get better returns with the Gold Plan...',
-    ),
-    InvestmentPlan(
-      id: '4',
-      title: 'Platinum Plan',
-      amount: '1,95,000 BDT',
-      revenue: '10,200 BDT / month',
-      details: 'Maximize your profits over a 1-year period...',
-    ),
-  ];
-
-  String? _selectedPlanId;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Choose Investment Plan")),
-      body: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: _plans.length,
-                itemBuilder: (context, index) {
-                  final plan = _plans[index];
-                  final isSelected = plan.id == _selectedPlanId;
-
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedPlanId = plan.id),
-                    child: Card(
-                      color: isSelected
-                          ? Colors.teal.withValues(alpha: 0.2)
-                          : Theme.of(context).cardColor,
-                      elevation: 6,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: isSelected
-                            ? const BorderSide(color: Colors.teal, width: 2)
-                            : BorderSide.none,
-                      ),
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              plan.title,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Investment: ${plan.amount}",
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            Text(
-                              "Monthly Revenue: ${plan.revenue}",
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () => _showDetailsDialog(plan),
-                                child: const Text("View Details"),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            if (_selectedPlanId != null) ...[
-              Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.only(top: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.teal.withValues(alpha: 0.2),
-                ),
-                child: Text(
-                  "Selected Plan: ${_plans.firstWhere((p) => p.id == _selectedPlanId!).title}",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _confirmInvestment,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "Confirm Investment",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-            ],
-          ],
+      appBar: AppBar(title: const Text('Investment Packages')),
+      backgroundColor: const Color(0xFF0f0f2d),
+      body: packagesAsync.when(
+        data: (packages) => ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: packages.length,
+          itemBuilder: (_, index) {
+            final package = packages[index];
+            return PackageCard(package: package);
+          },
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Text(
+            error.toString(),
+            style: const TextStyle(color: Colors.redAccent),
+          ),
         ),
       ),
     );
   }
+}
 
-  void _confirmInvestment() {
-    final selected = _plans.firstWhere((p) => p.id == _selectedPlanId);
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("Confirm Investment"),
-        content: Text(
-          "Are you sure you want to invest in:\n\n${selected.title} (${selected.amount})?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+class PackageCard extends ConsumerWidget {
+  final PackageModel package;
+  const PackageCard({super.key, required this.package});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0f0f2d),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withValues(alpha: 0.25),
+            blurRadius: 12,
+            spreadRadius: 2,
+            offset: const Offset(0, 6),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("✅ Investment Confirmed: ${selected.title}"),
+        ],
+        image: const DecorationImage(
+          image: AssetImage('assets/images/app_logo.png'), // ✅ watermark logo
+          alignment: Alignment.centerRight,
+          fit: BoxFit.contain,
+          opacity: 0.05,
+        ),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            package.name,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.green.shade400,
+              letterSpacing: 1.1,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _infoRow(
+            "Invest",
+            "(6500 × ${package.investmentUnits}) =\n${package.investAmount} BDT",
+          ),
+          _infoRow(
+            "Profit / month",
+            "(${package.monthlyProfit} × ${package.investmentUnits}) =\n${package.monthlyProfit * package.investmentUnits} BDT",
+          ),
+
+          const SizedBox(height: 16),
+          Text("* Capital will be returned after ${package.duration} months"),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 25, 25, 61),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              );
-            },
-            child: const Text("Confirm", style: TextStyle(color: Colors.teal)),
+              ),
+              onPressed: () async {
+                try {
+                  await ref
+                      .read(packagesProvider.notifier)
+                      .selectPackage(package.id);
+                  if (context.mounted) {
+                    CustomSnackbar.showSuccess(
+                      context,
+                      "${package.name} selected!",
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    CustomSnackbar.showError(context, e.toString());
+                  }
+                }
+              },
+              child: Text(
+                "SELECT PACKAGE",
+                style: TextStyle(
+                  color: Colors.green.shade400,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _showDetailsDialog(InvestmentPlan plan) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(plan.title),
-        content: Text(plan.details),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close", style: TextStyle(color: Colors.teal)),
-          ),
+  Widget _infoRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(color: Colors.white70)),
+          Text(value, style: const TextStyle(color: Colors.white)),
         ],
       ),
     );

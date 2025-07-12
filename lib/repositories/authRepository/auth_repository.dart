@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:knsbuy/constants/api_endpoints.dart';
-import 'package:knsbuy/models/login_response_model.dart';
+import 'package:knsbuy/models/auth/login_response_model.dart';
 import 'package:knsbuy/services/dio_client.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {

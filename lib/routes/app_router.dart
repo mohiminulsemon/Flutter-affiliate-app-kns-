@@ -10,18 +10,13 @@ class AppRouter {
   static const String login = '/login';
   static const String register = '/register';
   static const String dashboard = '/dashboard';
-  static const String investment = '/dashboard/investment';
+  static const String investment = '/investment';
 
   static final GoRouter router = GoRouter(
+    // initialLocation: home,
     routes: [
-      GoRoute(
-      path: home,
-      builder: (context, state) => const SplashScreen(), 
-    ),
-      GoRoute(
-        path: login,
-        builder: (context, state) => const LoginPage(),
-      ),
+      GoRoute(path: home, builder: (context, state) => const SplashScreen()),
+      GoRoute(path: login, builder: (context, state) => const LoginPage()),
       GoRoute(
         path: register,
         builder: (context, state) => const RegistrationPage(),
@@ -30,7 +25,7 @@ class AppRouter {
         path: dashboard,
         builder: (context, state) => const DashboardPage(),
       ),
-GoRoute(
+      GoRoute(
         path: investment,
         builder: (context, state) => const InvestmentPage(),
       ),

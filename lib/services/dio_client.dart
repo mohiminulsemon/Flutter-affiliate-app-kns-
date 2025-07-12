@@ -53,10 +53,15 @@ class DioClient {
   Future<T> get<T>(
     String path, {
     Map<String, dynamic>? queryParams,
+    dynamic data,
     required T Function(dynamic data) fromData,
   }) async {
     try {
-      final response = await _dio.get(path, queryParameters: queryParams);
+      final response = await _dio.get(
+        path,
+        queryParameters: queryParams,
+        data: data,
+      );
       return _parseResponse<T>(response, fromData);
     } on DioException catch (e) {
       final response = e.response;

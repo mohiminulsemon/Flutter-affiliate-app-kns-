@@ -3,4 +3,7 @@ class ApiEndpoints {
 
   static const String login = 'auth/login';
   static const String register = 'auth/register';
+  static const String packages = 'packages';
+  static const String selectPackage = 'userPackages/choose';
+  static const String userProfile = 'auth/me';
 }
