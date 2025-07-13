@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:knsbuy/constants/api_endpoints.dart';
 import 'package:knsbuy/models/packages_model.dart';
+import 'package:knsbuy/models/user_package_model.dart';
 import 'package:knsbuy/services/dio_client.dart';
 
 final packagesRepositoryProvider = Provider<PackagesRepository>((ref) {
@@ -15,9 +16,16 @@ class PackagesRepository {
   Future<List<PackageModel>> fetchPackages() {
     return dioClient.get<List<PackageModel>>(
       ApiEndpoints.packages,
-      fromData: (json) => (json as List)
-          .map((e) => PackageModel.fromJson(e))
-          .toList(),
+      fromData: (json) =>
+          (json as List).map((e) => PackageModel.fromJson(e)).toList(),
+    );
+  }
+
+  Future<List<UserPackageModel>> fetchUserPackages() {
+    return dioClient.get<List<UserPackageModel>>(
+      ApiEndpoints.userPackages,
+      fromData: (json) =>
+          (json as List).map((e) => UserPackageModel.fromJson(e)).toList(),
     );
   }
 

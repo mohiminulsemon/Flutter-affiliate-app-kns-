@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:knsbuy/routes/app_router.dart';
+import 'package:knsbuy/screenns/dashboard/widgets/profile_card.dart';
 import 'package:knsbuy/services/app_session.dart';
 import 'package:knsbuy/screenns/profile/profile_provider.dart';
 import 'package:lottie/lottie.dart';
@@ -32,18 +33,17 @@ class DashboardPage extends ConsumerWidget {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: profileAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text(e.toString())),
-          data: (user) => Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(8),
+        child: SingleChildScrollView(
+          child: Column(
             children: [
-              _profileRow("Username", user.userName),
-              _profileRow("Name", "${user.firstName} ${user.lastName}".trim()),
-              _profileRow("Referral Code", user.referralCode),
-              _profileRow("Status", user.status),
-              const SizedBox(height: 32),
+              profileAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text(e.toString())),
+                data: (user) => UserProfileCard(user: user),
+              ),
+
+              const SizedBox(height: 16),
               Center(
                 child: Column(
                   children: [
@@ -84,26 +84,6 @@ class DashboardPage extends ConsumerWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _profileRow(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Text(
-            "$title: ",
-            style: const TextStyle(
-              color: Colors.white70,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Expanded(
-            child: Text(value, style: const TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }

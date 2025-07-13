@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:knsbuy/models/packages_model.dart';
+import 'package:knsbuy/models/user_package_model.dart';
 import 'package:knsbuy/repositories/packages/packages_repository.dart';
 
 final packagesProvider =
@@ -32,3 +33,10 @@ class PackagesNotifier extends StateNotifier<AsyncValue<List<PackageModel>>> {
     }
   }
 }
+
+final userPackagesProvider =
+    FutureProvider.autoDispose<List<UserPackageModel>>((ref) async {
+  final repo = ref.read(packagesRepositoryProvider);
+  return repo.fetchUserPackages();
+});
+

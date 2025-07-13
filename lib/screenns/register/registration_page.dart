@@ -64,152 +64,145 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0f0f2d),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Card(
-            margin: const EdgeInsets.all(16),
-            color: const Color(0xFF1c1c3c),
-            elevation: 12,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset('assets/images/app_logo.png', height: 80),
-                    const SizedBox(height: 8),
-                    const Text(
-                      "Register",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      "Create a new account",
-                      style: TextStyle(fontSize: 16, color: Colors.white60),
-                    ),
-                    const SizedBox(height: 24),
+      body: SingleChildScrollView(
+        child: Card(
+          margin: const EdgeInsets.all(16),
+          color: const Color(0xFF1c1c3c),
+          elevation: 12,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset('assets/images/app_logo.png', height: 80),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Register",
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    "Create a new account",
+                    style: TextStyle(fontSize: 16, color: Colors.white60),
+                  ),
+                  const SizedBox(height: 24),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            "First Name",
-                            _firstNameController,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            "Last Name",
-                            _lastNameController,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    _buildTextField("User Name", _usernameController),
-                    const SizedBox(height: 12),
-                    _buildTextField("Email", _emailController, isEmail: true),
-                    const SizedBox(height: 12),
-
-                    _buildTextField(
-                      "Password",
-                      _passwordController,
-                      isPassword: true,
-                      obscure: _obscurePassword,
-                      toggle: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    _buildTextField(
-                      "Confirm Password",
-                      _confirmPasswordController,
-                      isPassword: true,
-                      checkMatch: true,
-                      obscure: _obscureConfirmPassword,
-                      toggle: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            "Referral Code",
-                            _referralCodeController,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            dropdownColor: const Color(0xFF2a2a4d),
-                            value: _selectedLevel,
-                            decoration: const InputDecoration(
-                              labelText: "Level",
-                            ),
-                            items: _levels.map((level) {
-                              return DropdownMenuItem(
-                                value: level,
-                                child: Text(level),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() => _selectedLevel = value!);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed:
-                            registrationState.status == RegisterStatus.loading
-                            ? null
-                            : _submitForm,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4e9af1),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          "Register",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          "First Name",
+                          _firstNameController,
                         ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTextField(
+                          "Last Name",
+                          _lastNameController,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
 
-                    const SizedBox(height: 12),
+                  _buildTextField("User Name", _usernameController),
+                  const SizedBox(height: 12),
+                  _buildTextField("Email", _emailController, isEmail: true),
+                  const SizedBox(height: 12),
 
-                    TextButton(
-                      onPressed: () => context.go('/login'),
+                  _buildTextField(
+                    "Password",
+                    _passwordController,
+                    isPassword: true,
+                    obscure: _obscurePassword,
+                    toggle: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  _buildTextField(
+                    "Confirm Password",
+                    _confirmPasswordController,
+                    isPassword: true,
+                    checkMatch: true,
+                    obscure: _obscureConfirmPassword,
+                    toggle: () {
+                      setState(() {
+                        _obscureConfirmPassword = !_obscureConfirmPassword;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          "Referral Code",
+                          _referralCodeController,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          dropdownColor: const Color(0xFF2a2a4d),
+                          value: _selectedLevel,
+                          decoration: const InputDecoration(labelText: "Level"),
+                          items: _levels.map((level) {
+                            return DropdownMenuItem(
+                              value: level,
+                              child: Text(level),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() => _selectedLevel = value!);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed:
+                          registrationState.status == RegisterStatus.loading
+                          ? null
+                          : _submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4e9af1),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                       child: const Text(
-                        "Already have an account? login",
-                        style: TextStyle(color: Colors.white70),
+                        "Register",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  TextButton(
+                    onPressed: () => context.go('/login'),
+                    child: const Text(
+                      "Already have an account? login",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

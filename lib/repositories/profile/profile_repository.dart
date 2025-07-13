@@ -13,15 +13,9 @@ class ProfileRepository {
 
   ProfileRepository(this.dioClient);
 
-  Future<UserProfile> getProfile(
-    {
-      required String email, 
-      required String password
-    }
-  ) {
+  Future<UserProfile> getProfile() {
     return dioClient.get<UserProfile>(
       ApiEndpoints.userProfile,
-      data: {'email': email, 'password': password},
       fromData: (json) => UserProfile.fromJson(json),
     );
   }

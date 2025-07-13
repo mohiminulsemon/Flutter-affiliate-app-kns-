@@ -4,11 +4,5 @@ import 'package:knsbuy/repositories/profile/profile_repository.dart';
 
 final profileProvider = FutureProvider<UserProfile>((ref) async {
   final repo = ref.read(profileRepositoryProvider);
-  return repo.getProfile(
-    email: ref.read(emailProvider),
-    password: ref.read(passwordProvider),
-  );
+  return repo.getProfile();
 });
-
-final emailProvider = StateProvider<String>((ref) => '');
-final passwordProvider = StateProvider<String>((ref) => '');
