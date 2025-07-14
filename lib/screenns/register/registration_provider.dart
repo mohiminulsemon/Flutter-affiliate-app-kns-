@@ -33,6 +33,7 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
     required String email,
     required String password,
     required String referralCode,
+    required String contactNumber,
     String? placeholder,
     required BuildContext context,
   }) async {
@@ -47,6 +48,7 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
         email: email,
         password: password,
         referralCode: referralCode,
+        contactNumber: contactNumber,
         placeholder: placeholder,
       );
 

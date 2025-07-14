@@ -16,22 +16,23 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneNumberController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _referralCodeController = TextEditingController();
-  String _selectedLevel = 'Level 1';
+  // String _selectedLevel = 'Level 1';
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  final List<String> _levels = [
-    'Level 1',
-    'Level 2',
-    'Level 3',
-    'Level 4',
-    'Level 5',
-    'Level 6',
-  ];
+  // final List<String> _levels = [
+  //   'Level 1',
+  //   'Level 2',
+  //   'Level 3',
+  //   'Level 4',
+  //   'Level 5',
+  //   'Level 6',
+  // ];
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -43,7 +44,8 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
         referralCode: _referralCodeController.text.trim(),
-        placeholder: _selectedLevel,
+        contactNumber: _phoneNumberController.text.trim(),
+        // placeholder: _selectedLevel,
         context: context,
       );
     }
@@ -115,6 +117,12 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                   const SizedBox(height: 12),
                   _buildTextField("Email", _emailController, isEmail: true),
                   const SizedBox(height: 12),
+                  _buildTextField(
+                    "Contact Number",
+                    _phoneNumberController,
+                    isPhoneNumber: true,
+                  ),
+                  const SizedBox(height: 12),
 
                   _buildTextField(
                     "Password",
@@ -151,23 +159,23 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                           _referralCodeController,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          dropdownColor: const Color(0xFF2a2a4d),
-                          value: _selectedLevel,
-                          decoration: const InputDecoration(labelText: "Level"),
-                          items: _levels.map((level) {
-                            return DropdownMenuItem(
-                              value: level,
-                              child: Text(level),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() => _selectedLevel = value!);
-                          },
-                        ),
-                      ),
+                      // const SizedBox(width: 12),
+                      // Expanded(
+                      //   child: DropdownButtonFormField<String>(
+                      //     dropdownColor: const Color(0xFF2a2a4d),
+                      //     value: _selectedLevel,
+                      //     decoration: const InputDecoration(labelText: "Level"),
+                      //     items: _levels.map((level) {
+                      //       return DropdownMenuItem(
+                      //         value: level,
+                      //         child: Text(level),
+                      //       );
+                      //     }).toList(),
+                      //     onChanged: (value) {
+                      //       setState(() => _selectedLevel = value!);
+                      //     },
+                      //   ),
+                      // ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -217,6 +225,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     bool isPassword = false,
     bool isEmail = false,
     bool checkMatch = false,
+    bool isPhoneNumber = false,
     bool obscure = false,
     VoidCallback? toggle,
   }) {
@@ -246,6 +255,9 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         }
         if (checkMatch && value != _passwordController.text) {
           return 'Passwords do not match';
+        }
+        if (isPhoneNumber && !RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+          return 'Enter a valid contact number. ex: 01812345678';
         }
         return null;
       },

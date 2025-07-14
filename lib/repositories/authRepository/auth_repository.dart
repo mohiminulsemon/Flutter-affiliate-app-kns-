@@ -31,6 +31,7 @@ class AuthRepository {
     required String email,
     required String password,
     required String referralCode,
+    required String contactNumber,
     String? placeholder,
   }) async {
     await dioClient.post<void>(
@@ -42,6 +43,7 @@ class AuthRepository {
         'email': email,
         'password': password,
         'referralCode': referralCode,
+        'contactNumber': contactNumber,
         // 'placeholder': placeholder
       },
       fromData: (json) => json,

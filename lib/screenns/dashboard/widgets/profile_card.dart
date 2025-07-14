@@ -57,12 +57,16 @@ class UserProfileCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _profileRow("Username", user.userName),
+              Text(
+                "*also your refer code",
+                style: const TextStyle(color: Colors.white70, fontSize: 8),
+              ),
               _profileRow(
                 "Full Name",
                 "${user.firstName} ${user.lastName}".trim(),
               ),
               _profileRow("Email", user.email),
-              _profileRow("Referral Code", user.referralCode),
+              _profileRow("Refered By", user.referralCode),
             ],
           ),
         ],
