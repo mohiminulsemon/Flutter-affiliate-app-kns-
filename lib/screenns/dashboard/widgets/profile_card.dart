@@ -58,7 +58,7 @@ class UserProfileCard extends StatelessWidget {
             children: [
               _profileRow("Username", user.userName),
               Text(
-                "*also your refer code",
+                "*also your refer/placeholder code",
                 style: const TextStyle(color: Colors.white70, fontSize: 8),
               ),
               _profileRow(
@@ -66,7 +66,10 @@ class UserProfileCard extends StatelessWidget {
                 "${user.firstName} ${user.lastName}".trim(),
               ),
               _profileRow("Email", user.email),
+              _profileRow("Phone", user.contactNumber),
+              _profileRow("Status", user.status),
               _profileRow("Refered By", user.referralCode),
+              _profileRow("Placeholder Code", user.placeholderCode),
             ],
           ),
         ],

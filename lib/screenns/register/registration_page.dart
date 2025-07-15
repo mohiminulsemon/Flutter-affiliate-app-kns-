@@ -21,18 +21,9 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _phoneNumberController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _referralCodeController = TextEditingController();
-  // String _selectedLevel = 'Level 1';
+  final _placeholderCodeController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-
-  // final List<String> _levels = [
-  //   'Level 1',
-  //   'Level 2',
-  //   'Level 3',
-  //   'Level 4',
-  //   'Level 5',
-  //   'Level 6',
-  // ];
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -45,7 +36,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         password: _passwordController.text,
         referralCode: _referralCodeController.text.trim(),
         contactNumber: _phoneNumberController.text.trim(),
-        // placeholder: _selectedLevel,
+        placeholderCode: _placeholderCodeController.text.trim(),
         context: context,
       );
     }
@@ -98,14 +89,14 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                     children: [
                       Expanded(
                         child: _buildTextField(
-                          "First Name",
+                          "First Name*",
                           _firstNameController,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildTextField(
-                          "Last Name",
+                          "Last Name*",
                           _lastNameController,
                         ),
                       ),
@@ -113,19 +104,19 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                   ),
                   const SizedBox(height: 12),
 
-                  _buildTextField("User Name", _usernameController),
+                  _buildTextField("User Name*", _usernameController),
                   const SizedBox(height: 12),
-                  _buildTextField("Email", _emailController, isEmail: true),
+                  _buildTextField("Email*", _emailController, isEmail: true),
                   const SizedBox(height: 12),
                   _buildTextField(
-                    "Contact Number",
+                    "Contact Number*",
                     _phoneNumberController,
                     isPhoneNumber: true,
                   ),
                   const SizedBox(height: 12),
 
                   _buildTextField(
-                    "Password",
+                    "Password*",
                     _passwordController,
                     isPassword: true,
                     obscure: _obscurePassword,
@@ -138,7 +129,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                   const SizedBox(height: 12),
 
                   _buildTextField(
-                    "Confirm Password",
+                    "Confirm Password*",
                     _confirmPasswordController,
                     isPassword: true,
                     checkMatch: true,
@@ -155,27 +146,18 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
                     children: [
                       Expanded(
                         child: _buildTextField(
-                          "Referral Code",
+                          "Referral Code*",
                           _referralCodeController,
                         ),
                       ),
-                      // const SizedBox(width: 12),
-                      // Expanded(
-                      //   child: DropdownButtonFormField<String>(
-                      //     dropdownColor: const Color(0xFF2a2a4d),
-                      //     value: _selectedLevel,
-                      //     decoration: const InputDecoration(labelText: "Level"),
-                      //     items: _levels.map((level) {
-                      //       return DropdownMenuItem(
-                      //         value: level,
-                      //         child: Text(level),
-                      //       );
-                      //     }).toList(),
-                      //     onChanged: (value) {
-                      //       setState(() => _selectedLevel = value!);
-                      //     },
-                      //   ),
-                      // ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTextField(
+                          "Placeholder Code",
+                          _placeholderCodeController,
+                          isOptional: true,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -227,6 +209,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     bool checkMatch = false,
     bool isPhoneNumber = false,
     bool obscure = false,
+    bool isOptional = false,
     VoidCallback? toggle,
   }) {
     return TextFormField(
@@ -246,17 +229,20 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
             : null,
       ),
       validator: (value) {
-        if (value == null || value.trim().isEmpty) {
+        if (!isOptional && (value == null || value.trim().isEmpty)) {
           return '$label is required';
         }
+
         if (isEmail &&
-            !RegExp(r'^[\w\-.]+@([\w\-]+\.)+[\w]{2,4}$').hasMatch(value)) {
+            !RegExp(
+              r'^[\w\-.]+@([\w\-]+\.)+[\w]{2,4}$',
+            ).hasMatch(value ?? '')) {
           return 'Enter a valid email';
         }
         if (checkMatch && value != _passwordController.text) {
           return 'Passwords do not match';
         }
-        if (isPhoneNumber && !RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+        if (isPhoneNumber && !RegExp(r'^[0-9]{10}$').hasMatch(value ?? '')) {
           return 'Enter a valid contact number. ex: 01812345678';
         }
         return null;

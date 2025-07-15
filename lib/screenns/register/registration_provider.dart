@@ -34,7 +34,7 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
     required String password,
     required String referralCode,
     required String contactNumber,
-    String? placeholder,
+    required String placeholderCode,
     required BuildContext context,
   }) async {
     state = state.copyWith(status: RegisterStatus.loading);
@@ -49,7 +49,7 @@ class RegisterNotifier extends StateNotifier<RegisterState> {
         password: password,
         referralCode: referralCode,
         contactNumber: contactNumber,
-        placeholder: placeholder,
+        placeholderCode: placeholderCode.isNotEmpty ? placeholderCode : referralCode,
       );
 
       state = state.copyWith(status: RegisterStatus.success);
