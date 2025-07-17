@@ -4,7 +4,7 @@ import 'package:knsbuy/models/user_package_model.dart';
 import 'package:knsbuy/repositories/packages/packages_repository.dart';
 
 final packagesProvider =
-    StateNotifierProvider<PackagesNotifier, AsyncValue<List<PackageModel>>>(
+    StateNotifierProvider.autoDispose<PackagesNotifier, AsyncValue<List<PackageModel>>>(
       (ref) => PackagesNotifier(ref),
     );
 

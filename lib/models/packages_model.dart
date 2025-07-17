@@ -1,8 +1,8 @@
 class PackageModel {
   final int id;
   final String name;
-  final double investAmount;
-  final double monthlyProfit;
+  final dynamic investAmount;
+  final dynamic monthlyProfit;
   final int investmentUnits;
   final int duration;
 
@@ -19,8 +19,8 @@ class PackageModel {
     return PackageModel(
       id: json['id'],
       name: json['name'],
-      investAmount: (json['investAmount'] as num).toDouble(),
-      monthlyProfit: (json['monthlyProfit'] as num).toDouble(),
+      investAmount: json['investAmount'],
+      monthlyProfit: json['monthlyProfit'],
       investmentUnits: json['investmentUnits'],
       duration: json['duration'],
     );

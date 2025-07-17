@@ -61,6 +61,7 @@ class UserProfileCard extends StatelessWidget {
                 "*also your refer/placeholder code",
                 style: const TextStyle(color: Colors.white70, fontSize: 8),
               ),
+              const SizedBox(height: 8),
               _profileRow(
                 "Full Name",
                 "${user.firstName} ${user.lastName}".trim(),

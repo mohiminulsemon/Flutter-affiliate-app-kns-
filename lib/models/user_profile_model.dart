@@ -9,7 +9,7 @@ class UserProfile {
   final String status;
   final String referralCode;
   final String placeholderCode;
-  final DateTime createdAt;
+  final String createdAt;
 
   UserProfile({
     required this.id,
@@ -37,7 +37,7 @@ class UserProfile {
       status: json['status'],
       referralCode: json['referralCode'],
       placeholderCode: json['placeholderCode'],
-      createdAt: DateTime.parse(json['createdAt']),
+      createdAt: json['createdAt'],
     );
   }
 }

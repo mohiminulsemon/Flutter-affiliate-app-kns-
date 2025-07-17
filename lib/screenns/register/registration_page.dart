@@ -232,6 +232,9 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         if (!isOptional && (value == null || value.trim().isEmpty)) {
           return '$label is required';
         }
+        if (isPassword && (value?.length ?? 0) < 8) {
+          return 'Password must be at least 8 characters';
+        }
 
         if (isEmail &&
             !RegExp(
@@ -242,7 +245,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         if (checkMatch && value != _passwordController.text) {
           return 'Passwords do not match';
         }
-        if (isPhoneNumber && !RegExp(r'^[0-9]{10}$').hasMatch(value ?? '')) {
+        if (isPhoneNumber && !RegExp(r'^[0-9]{11}$').hasMatch(value ?? '')) {
           return 'Enter a valid contact number. ex: 01812345678';
         }
         return null;
